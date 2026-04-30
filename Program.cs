@@ -1,9 +1,11 @@
 using Inventra.Data;
+using Inventra.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddScoped<ProductService>();
 builder.Services.AddControllers();
 
 // Add services to the container.

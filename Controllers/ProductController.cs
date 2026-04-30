@@ -1,91 +1,56 @@
-using Inventra.Data;
 using Inventra.DTOs.Product;
-using Inventra.Models;
-using Microsoft.AspNetCore.Authorization;
+using Inventra.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inventra.Controllers;
 
-[Authorize]
+// [Authorize]
 [ApiController]
 [Route("api/v1/product")]
 public class ProductController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ProductService _productService;
 
-    public ProductController(AppDbContext context)
+    public ProductController(ProductService productService)
     {
-        _context = context;
+        _productService = productService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+    public async Task<IActionResult> GetProducts()
     {
-        return await _context.Products.ToListAsync();
+        var response = await _productService.GetProductsAsync();
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Product>> GetProductById(Guid id)
+    public async Task<IActionResult> GetProduct(Guid id)
     {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-        return product;
+        var response = await _productService.GetProductByIdAsync(id);
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Product>> CreateProduct(ProductCreateDto product)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto product)
     {
-        var newProduct = new Product
-        {
-            Id = Guid.NewGuid(),
-            Name = product.Name,
-            Sku = product.Sku,
-            PurchasePrice = product.PurchasePrice,
-            SellingPrice = product.SellingPrice,
-            Stock = product.Stock
-        };
+        var response = await _productService.CreateProductAsync(product);
 
-        _context.Products.Add(newProduct);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
+        return Ok(response);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto product)
     {
-        var existingProduct = await _context.Products.FindAsync(id);
+        var response = await _productService.UpdateProductByIdAsync(id, product);
 
-        if (existingProduct == null)
-        {
-            return NotFound();
-        }
-
-        existingProduct.Name = product.Name;
-        existingProduct.Sku = product.Sku;
-        existingProduct.PurchasePrice = product.PurchasePrice;
-        existingProduct.SellingPrice = product.SellingPrice;
-        existingProduct.Stock = product.Stock;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
+        return Ok(response);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(Guid id)
     {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null)
-        {
-            return NotFound();
-        }
+        var response = await _productService.DeleteProductById(id);
 
-        _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        return Ok(response);
     }
 }
