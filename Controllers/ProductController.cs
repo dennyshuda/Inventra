@@ -51,4 +51,39 @@ public class ProductController : ControllerBase
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto product)
+    {
+        var existingProduct = await _context.Products.FindAsync(id);
+
+        if (existingProduct == null)
+        {
+            return NotFound();
+        }
+
+        existingProduct.Name = product.Name;
+        existingProduct.Sku = product.Sku;
+        existingProduct.PurchasePrice = product.PurchasePrice;
+        existingProduct.SellingPrice = product.SellingPrice;
+        existingProduct.Stock = product.Stock;
+
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(Guid id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
