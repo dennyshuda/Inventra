@@ -1,4 +1,4 @@
-using Inventra.DTOs.User;
+using Inventra.DTOs.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +20,13 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, isPersistent: false, lockoutOnFailure: false);
+        var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, isPersistent: true, lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
             return Ok(new { message = "Login Berhasil!" });
         }
 
-        // Jika gagal
         if (result.IsLockedOut)
         {
             return BadRequest("Akun Anda terkunci sementara.");
