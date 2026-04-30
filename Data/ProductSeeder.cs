@@ -1,4 +1,4 @@
-using Inventra.Entities;
+using Inventra.Models;
 
 namespace Inventra.Data;
 

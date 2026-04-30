@@ -1,6 +1,6 @@
 using Inventra.Data;
 using Inventra.DTOs.Product;
-using Inventra.Entities;
+using Inventra.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

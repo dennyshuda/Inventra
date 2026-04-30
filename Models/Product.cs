@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-namespace Inventra.Entities;
+namespace Inventra.Models;
 
 public class Product
 {
