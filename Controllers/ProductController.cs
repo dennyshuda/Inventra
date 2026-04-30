@@ -1,11 +1,13 @@
 using Inventra.Data;
 using Inventra.DTOs.Product;
 using Inventra.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventra.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/product")]
 public class ProductController : ControllerBase

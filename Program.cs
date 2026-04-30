@@ -1,4 +1,5 @@
 using Inventra.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -8,6 +9,16 @@ builder.Services.AddControllers();
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false; // Dipermudah untuk dev
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=Inventra.db"));
 
