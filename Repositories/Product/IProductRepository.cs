@@ -6,5 +6,8 @@ namespace Inventra.Repositories.Product
         Task<Models.Product?> GetProductByIdAsync(Guid id);
         Task<Models.Product> CreateProductAsync(Models.Product product);
         Task<Models.Product> UpdateProductAsync(Models.Product product);
+        Task DeleteProductByIdAsync(Guid id);
+
+
     }
 }

@@ -76,7 +76,6 @@ public class ProductController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductDto updateProductDto)
     {
-        // var response = await _productService.UpdateProductAsync(id, updateProductDto);
 
         var validationResult = await _updateProductValidator.ValidateAsync(updateProductDto);
         if (!validationResult.IsValid)
@@ -97,31 +96,19 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
-    // [HttpPut("{id}")]
-    //     public async Task<IActionResult> Update(int id, [FromBody] UpdateTodoItemDto updateDto)
-    //     {
-    //         var userId = GetCurrentUserId();
-    //         if (string.IsNullOrEmpty(userId))
-    //             return Unauthorized();
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProductById(Guid id)
+    {
 
-    //         var validationResult = await _updateValidator.ValidateAsync(updateDto);
-    //         if (!validationResult.IsValid)
-    //         {
-    //             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-    //             var errorResponse = ApiResponseDto<TodoItemDto>.ErrorResult("Validation failed", errors);
-    //             return BadRequest(errorResponse);
-    //         }
+        var result = await _productService.DeleteProductByIdAsync(id);
 
-    //         var result = await _todoItemService.UpdateAsync(id, updateDto, userId);
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
 
-    //         if (!result.Success)
-    //         {
-    //             return BadRequest(result);
-    //         }
-
-    //         return Ok(result);
-    //     }
-
+        return Ok(result);
+    }
 
 
     // [HttpDelete("{id}")]

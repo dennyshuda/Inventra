@@ -94,4 +94,25 @@ public class ProductService : IProductService
             return ApiResponseDto<ProductDto>.ErrorResult($"Error updating todo item: {ex.Message}");
         }
     }
+
+    public async Task<ApiResponseDto<bool>> DeleteProductByIdAsync(Guid id)
+    {
+        try
+        {
+            var existingProduct = await _productRepository.GetProductByIdAsync(id);
+
+            if (existingProduct == null)
+            {
+                return ApiResponseDto<bool>.ErrorResult("Product not found");
+            }
+
+            await _productRepository.DeleteProductByIdAsync(id);
+
+            return ApiResponseDto<bool>.SuccessResult(true, "Product deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponseDto<bool>.ErrorResult($"Error deleting product: {ex.Message}");
+        }
+    }
 }
