@@ -1,56 +1,81 @@
+using FluentValidation;
+using FluentValidation.Results;
 using Inventra.DTOs.Product;
 using Inventra.Services;
+using Inventra.Services.Product;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventra.Controllers;
 
 // [Authorize]
 [ApiController]
-[Route("api/v1/product")]
+[Route("api/v1/products")]
 public class ProductController : ControllerBase
 {
-    private readonly ProductService _productService;
+    private readonly IProductService _productService;
+    private readonly IValidator<CreateProductDto> _productValidator;
 
-    public ProductController(ProductService productService)
+    public ProductController(IProductService productService, IValidator<CreateProductDto> productValidator)
     {
         _productService = productService;
+        _productValidator = productValidator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetProducts()
     {
-        var response = await _productService.GetProductsAsync();
-        return Ok(response);
+        var result = await _productService.GetProductsAsync();
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
     }
+
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetProduct(Guid id)
+    public async Task<IActionResult> GetProductById(Guid id)
     {
-        var response = await _productService.GetProductByIdAsync(id);
-        return Ok(response);
+        var result = await _productService.GetProductByIdAsync(id);
+
+        if (!result.Success)
+        {
+            return NotFound(result);
+        }
+        return Ok(result);
+
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto product)
-    {
-        var response = await _productService.CreateProductAsync(product);
+    // [HttpPost]
+    // public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto product)
+    // {
+    //     var validationResult = _productValidator.Validate(product);
 
-        return Ok(response);
-    }
+    //     if (!validationResult.IsValid)
+    //     {
+    //         return BadRequest(new { errors = validationResult.Errors });
+    //     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto product)
-    {
-        var response = await _productService.UpdateProductByIdAsync(id, product);
+    //     var response = await _productService.CreateProductAsync(product);
 
-        return Ok(response);
-    }
+    //     return Ok(response);
+    // }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProduct(Guid id)
-    {
-        var response = await _productService.DeleteProductById(id);
+    // [HttpPut("{id}")]
+    // public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto product)
+    // {
+    //     var response = await _productService.UpdateProductByIdAsync(id, product);
 
-        return Ok(response);
-    }
+    //     return Ok(response);
+    // }
+
+    // [HttpDelete("{id}")]
+    // public async Task<IActionResult> DeleteProduct(Guid id)
+    // {
+    //     var response = await _productService.DeleteProductById(id);
+
+    //     return Ok(response);
+    // }
 }
