@@ -1,6 +1,12 @@
 using System.Text;
+using FluentValidation;
 using Inventra.Data;
+using Inventra.DTOs.Auth;
+using Inventra.DTOs.Product;
 using Inventra.Services;
+using Inventra.Services.Auth;
+using Inventra.Validators;
+using Inventra.Validators.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +14,17 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHealthChecks();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddControllers();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddScoped<IValidator<RegisterDto>, RegisterValidator>();
+builder.Services.AddScoped<IValidator<LoginDto>, LoginValidator>();
+builder.Services.AddScoped<IValidator<ProductCreateDto>, ProductValidator>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -57,6 +72,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapHealthChecks("/");
 
 app.MapControllers();
 
