@@ -1,6 +1,6 @@
 namespace Inventra.DTOs.Product;
 
-public class ProductUpdateDto
+public class UpdateProductDto
 {
     public string? Name { get; set; } = string.Empty;
     public string? Sku { get; set; } = string.Empty;
