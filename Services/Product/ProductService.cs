@@ -2,7 +2,6 @@ using AutoMapper;
 using Inventra.DTOs;
 using Inventra.DTOs.Product;
 using Inventra.Repositories.Product;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Inventra.Services.Product;
 
@@ -54,7 +53,7 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<ApiResponseDto<ProductDto>> CreateProduct(CreateProductDto createProductDto)
+    public async Task<ApiResponseDto<ProductDto>> CreateProductAsync(CreateProductDto createProductDto)
     {
         try
         {
@@ -68,6 +67,31 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             return ApiResponseDto<ProductDto>.ErrorResult($"Error creating product: {ex.Message}");
+        }
+    }
+
+
+    public async Task<ApiResponseDto<ProductDto>> UpdateProductAsync(Guid id, UpdateProductDto updateProductDto)
+    {
+        try
+        {
+            var existingTodoItem = await _productRepository.GetProductByIdAsync(id);
+
+            if (existingTodoItem == null)
+            {
+                return ApiResponseDto<ProductDto>.ErrorResult("Product not found");
+            }
+
+            _mapper.Map(updateProductDto, existingTodoItem);
+
+            var updatedProduct = await _productRepository.UpdateProductAsync(existingTodoItem);
+            var productDto = _mapper.Map<ProductDto>(updatedProduct);
+
+            return ApiResponseDto<ProductDto>.SuccessResult(productDto, "Todo item updated successfully");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponseDto<ProductDto>.ErrorResult($"Error updating todo item: {ex.Message}");
         }
     }
 }

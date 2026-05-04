@@ -14,12 +14,14 @@ namespace Inventra.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    private readonly IValidator<CreateProductDto> _productValidator;
+    private readonly IValidator<CreateProductDto> _createProductValidator;
+    private readonly IValidator<UpdateProductDto> _updateProductValidator;
 
-    public ProductController(IProductService productService, IValidator<CreateProductDto> productValidator)
+    public ProductController(IProductService productService, IValidator<CreateProductDto> createProductValidator, IValidator<UpdateProductDto> updateProductValidator)
     {
         _productService = productService;
-        _productValidator = productValidator;
+        _createProductValidator = createProductValidator;
+        _updateProductValidator = updateProductValidator;
     }
 
     [HttpGet]
@@ -51,7 +53,7 @@ public class ProductController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto createProductDto)
     {
-        var validationResult = await _productValidator.ValidateAsync(createProductDto);
+        var validationResult = await _createProductValidator.ValidateAsync(createProductDto);
 
         if (!validationResult.IsValid)
         {
@@ -60,7 +62,7 @@ public class ProductController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        var result = await _productService.CreateProduct(createProductDto);
+        var result = await _productService.CreateProductAsync(createProductDto);
 
         if (!result.Success)
         {
@@ -71,14 +73,56 @@ public class ProductController : ControllerBase
 
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductDto updateProductDto)
+    {
+        // var response = await _productService.UpdateProductAsync(id, updateProductDto);
+
+        var validationResult = await _updateProductValidator.ValidateAsync(updateProductDto);
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            var errorResponse = ApiResponseDto<ProductDto>.ErrorResult("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+
+
+        var result = await _productService.UpdateProductAsync(id, updateProductDto);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
 
     // [HttpPut("{id}")]
-    // public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto product)
-    // {
-    //     var response = await _productService.UpdateProductByIdAsync(id, product);
+    //     public async Task<IActionResult> Update(int id, [FromBody] UpdateTodoItemDto updateDto)
+    //     {
+    //         var userId = GetCurrentUserId();
+    //         if (string.IsNullOrEmpty(userId))
+    //             return Unauthorized();
 
-    //     return Ok(response);
-    // }
+    //         var validationResult = await _updateValidator.ValidateAsync(updateDto);
+    //         if (!validationResult.IsValid)
+    //         {
+    //             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+    //             var errorResponse = ApiResponseDto<TodoItemDto>.ErrorResult("Validation failed", errors);
+    //             return BadRequest(errorResponse);
+    //         }
+
+    //         var result = await _todoItemService.UpdateAsync(id, updateDto, userId);
+
+    //         if (!result.Success)
+    //         {
+    //             return BadRequest(result);
+    //         }
+
+    //         return Ok(result);
+    //     }
+
+
 
     // [HttpDelete("{id}")]
     // public async Task<IActionResult> DeleteProduct(Guid id)
