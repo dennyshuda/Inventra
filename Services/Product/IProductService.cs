@@ -7,4 +7,5 @@ public interface IProductService
 {
     Task<ApiResponseDto<List<ProductDto>>> GetProductsAsync();
     Task<ApiResponseDto<ProductDto>> GetProductByIdAsync(Guid id);
+    Task<ApiResponseDto<ProductDto>> CreateProduct(CreateProductDto createProductDto);
 }

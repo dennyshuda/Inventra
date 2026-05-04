@@ -1,5 +1,4 @@
 using Inventra.Data;
-using Inventra.DTOs.Product;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventra.Repositories.Product;
@@ -15,36 +14,19 @@ public class ProductRepository : IProductRepository
     }
 
 
-    public async Task<List<ProductDto>> GetProductsAsync()
+    public async Task<List<Models.Product>> GetProductsAsync()
     {
-        return await _context.Products
-            .Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Sku = p.Sku,
-                PurchasePrice = p.PurchasePrice,
-                SellingPrice = p.SellingPrice,
-                Stock = p.Stock,
-                CreatedAt = p.CreatedAt
-            })
-            .ToListAsync();
+        return await _context.Products.ToListAsync();
     }
 
-    public async Task<ProductDto?> GetProductByIdAsync(Guid id)
+    public async Task<Models.Product?> GetProductByIdAsync(Guid id)
     {
-        return await _context.Products
-            .Where(p => p.Id == id)
-            .Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Sku = p.Sku,
-                PurchasePrice = p.PurchasePrice,
-                SellingPrice = p.SellingPrice,
-                Stock = p.Stock,
-                CreatedAt = p.CreatedAt
-            })
-            .FirstOrDefaultAsync();
+        return await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+    }
+    public async Task<Models.Product> CreateProductAsync(Models.Product product)
+    {
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        return product;
     }
 }

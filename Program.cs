@@ -3,10 +3,11 @@ using FluentValidation;
 using Inventra.Data;
 using Inventra.DTOs.Auth;
 using Inventra.DTOs.Product;
-using Inventra.Services;
+using Inventra.Repositories.Product;
 using Inventra.Services.Auth;
-using Inventra.Validators;
+using Inventra.Services.Product;
 using Inventra.Validators.Auth;
+using Inventra.Validators.Product;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,16 +16,18 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHealthChecks();
-builder.Services.AddScoped<ProductService>();
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IValidator<RegisterDto>, RegisterValidator>();
 builder.Services.AddScoped<IValidator<LoginDto>, LoginValidator>();
-builder.Services.AddScoped<IValidator<ProductCreateDto>, ProductValidator>();
+builder.Services.AddScoped<IValidator<CreateProductDto>, CreateProductValidator>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -46,14 +49,22 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
+        // ValidateIssuer = true,
+        // ValidateAudience = true,
+        // ValidateLifetime = true,
+        // ValidateIssuerSigningKey = true,
+        // ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        // ValidAudience = builder.Configuration["Jwt:Audience"],
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        // IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
     };
 });

@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Inventra.DTOs;
 using Inventra.DTOs.Product;
 using Inventra.Services;
 using Inventra.Services.Product;
@@ -45,23 +46,31 @@ public class ProductController : ControllerBase
             return NotFound(result);
         }
         return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto createProductDto)
+    {
+        var validationResult = await _productValidator.ValidateAsync(createProductDto);
+
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            var errorResponse = ApiResponseDto<ProductDto>.ErrorResult("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+
+        var result = await _productService.CreateProduct(createProductDto);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return CreatedAtAction(nameof(GetProductById), new { id = result.Data?.Id }, result);
 
     }
 
-    // [HttpPost]
-    // public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto product)
-    // {
-    //     var validationResult = _productValidator.Validate(product);
-
-    //     if (!validationResult.IsValid)
-    //     {
-    //         return BadRequest(new { errors = validationResult.Errors });
-    //     }
-
-    //     var response = await _productService.CreateProductAsync(product);
-
-    //     return Ok(response);
-    // }
 
     // [HttpPut("{id}")]
     // public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductUpdateDto product)

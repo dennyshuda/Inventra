@@ -1,9 +1,9 @@
-using Inventra.DTOs.Product;
-
-namespace Inventra.Repositories.Product;
-
-public interface IProductRepository
+namespace Inventra.Repositories.Product
 {
-    Task<List<ProductDto>> GetProductsAsync();
-    Task<ProductDto?> GetProductByIdAsync(Guid id);
+    public interface IProductRepository
+    {
+        Task<List<Models.Product>> GetProductsAsync();
+        Task<Models.Product?> GetProductByIdAsync(Guid id);
+        Task<Models.Product> CreateProductAsync(Models.Product product);
+    }
 }

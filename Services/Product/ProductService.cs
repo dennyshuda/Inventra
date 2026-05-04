@@ -2,6 +2,7 @@ using AutoMapper;
 using Inventra.DTOs;
 using Inventra.DTOs.Product;
 using Inventra.Repositories.Product;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Inventra.Services.Product;
 
@@ -50,6 +51,23 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             return ApiResponseDto<ProductDto>.ErrorResult($"Error retrieving product: {ex.Message}");
+        }
+    }
+
+    public async Task<ApiResponseDto<ProductDto>> CreateProduct(CreateProductDto createProductDto)
+    {
+        try
+        {
+            var product = _mapper.Map<Models.Product>(createProductDto);
+
+            var createdProduct = await _productRepository.CreateProductAsync(product);
+            var todoItemDto = _mapper.Map<ProductDto>(createdProduct);
+
+            return ApiResponseDto<ProductDto>.SuccessResult(todoItemDto, "Product created successfully");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponseDto<ProductDto>.ErrorResult($"Error creating product: {ex.Message}");
         }
     }
 }
