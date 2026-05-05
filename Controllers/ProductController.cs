@@ -110,12 +110,16 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("category/{categoryId}")]
+    public async Task<IActionResult> GetProductByCategory(int categoryId)
+    {
+        var result = await _productService.GetProductsByCategoryAsync(categoryId);
 
-    // [HttpDelete("{id}")]
-    // public async Task<IActionResult> DeleteProduct(Guid id)
-    // {
-    //     var response = await _productService.DeleteProductById(id);
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
 
-    //     return Ok(response);
-    // }
+        return Ok(result);
+    }
 }

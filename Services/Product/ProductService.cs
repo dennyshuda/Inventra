@@ -33,11 +33,11 @@ public class ProductService : IProductService
     }
 
 
-    public async Task<ApiResponseDto<ProductDto>> GetProductByIdAsync(Guid id)
+    public async Task<ApiResponseDto<ProductDto>> GetProductByIdAsync(Guid productId)
     {
         try
         {
-            var product = await _productRepository.GetProductByIdAsync(id);
+            var product = await _productRepository.GetProductByIdAsync(productId);
 
             if (product == null)
             {
@@ -71,11 +71,11 @@ public class ProductService : IProductService
     }
 
 
-    public async Task<ApiResponseDto<ProductDto>> UpdateProductAsync(Guid id, UpdateProductDto updateProductDto)
+    public async Task<ApiResponseDto<ProductDto>> UpdateProductAsync(Guid productId, UpdateProductDto updateProductDto)
     {
         try
         {
-            var existingProduct = await _productRepository.GetProductByIdAsync(id);
+            var existingProduct = await _productRepository.GetProductByIdAsync(productId);
 
             if (existingProduct == null)
             {
@@ -95,24 +95,40 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<ApiResponseDto<bool>> DeleteProductByIdAsync(Guid id)
+    public async Task<ApiResponseDto<bool>> DeleteProductByIdAsync(Guid productId)
     {
         try
         {
-            var existingProduct = await _productRepository.GetProductByIdAsync(id);
+            var existingProduct = await _productRepository.GetProductByIdAsync(productId);
 
             if (existingProduct == null)
             {
                 return ApiResponseDto<bool>.ErrorResult("Product not found");
             }
 
-            await _productRepository.DeleteProductByIdAsync(id);
+            await _productRepository.DeleteProductByIdAsync(productId);
 
             return ApiResponseDto<bool>.SuccessResult(true, "Product deleted successfully");
         }
         catch (Exception ex)
         {
             return ApiResponseDto<bool>.ErrorResult($"Error deleting product: {ex.Message}");
+        }
+    }
+
+    public async Task<ApiResponseDto<List<ProductDto>>> GetProductsByCategoryAsync(int categoryId)
+    {
+        try
+        {
+            var products = await _productRepository.GetProductsByCategoryAsync(categoryId);
+
+            var productDtos = _mapper.Map<List<ProductDto>>(products);
+
+            return ApiResponseDto<List<ProductDto>>.SuccessResult(productDtos);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponseDto<List<ProductDto>>.ErrorResult($"Gagal mengambil produk: {ex.Message}");
         }
     }
 }
