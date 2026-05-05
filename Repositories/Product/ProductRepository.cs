@@ -20,21 +20,21 @@ public class ProductRepository : IProductRepository
 
     public async Task<Models.Product?> GetProductByIdAsync(Guid productId)
     {
-        return await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        return await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == productId);
     }
     public async Task<Models.Product> CreateProductAsync(Models.Product product)
     {
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
-        return product;
+
+        return await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == product.Id) ?? product;
     }
 
     public async Task<Models.Product> UpdateProductAsync(Models.Product product)
     {
-        _context.Products.Update(product);
         await _context.SaveChangesAsync();
 
-        return product;
+        return await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == product.Id) ?? product;
     }
 
     public async Task DeleteProductByIdAsync(Guid productId)
