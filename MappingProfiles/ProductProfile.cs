@@ -1,4 +1,5 @@
 using AutoMapper;
+using Inventra.DTOs.Category;
 using Inventra.DTOs.Product;
 using Inventra.Models;
 
@@ -8,6 +9,7 @@ public class ProductProfile : Profile
 {
     public ProductProfile()
     {
+        CreateMap<Category, CategoryDto>();
         CreateMap<Product, ProductDto>();
         CreateMap<CreateProductDto, Product>()
         .ForMember(dest => dest.Id, opt => opt.Ignore());

@@ -16,7 +16,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<List<Models.Product>> GetProductsAsync()
     {
-        return await _context.Products.ToListAsync();
+        return await _context.Products.Include(p => p.Category).ToListAsync();
     }
 
     public async Task<Models.Product?> GetProductByIdAsync(Guid id)

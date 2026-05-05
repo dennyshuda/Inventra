@@ -1,3 +1,5 @@
+using Inventra.DTOs.Category;
+
 namespace Inventra.DTOs.Product;
 
 public record ProductDto
@@ -9,4 +11,5 @@ public record ProductDto
     public decimal SellingPrice { get; set; }
     public int Stock { get; set; }
     public DateTime? CreatedAt { get; set; }
+    public CategoryDto Category { get; set; } = default!;
 }
