@@ -11,14 +11,14 @@ namespace Inventra.Controllers;
 
 [ApiController]
 [Route("api/v1/auth")]
-public class UserController : ControllerBase
+public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly IValidator<RegisterDto> _registerValidator;
     private readonly IValidator<LoginDto> _loginValidator;
 
-    public UserController(IAuthService authService, SignInManager<IdentityUser> signInManager, IValidator<RegisterDto> registerValidator, IValidator<LoginDto> loginValidator)
+    public AuthController(IAuthService authService, SignInManager<IdentityUser> signInManager, IValidator<RegisterDto> registerValidator, IValidator<LoginDto> loginValidator)
     {
         _authService = authService;
         _signInManager = signInManager;
@@ -49,10 +49,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("logout")]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return Ok("Berhasil Logout");
+        return Ok(ApiResponseDto<string>.SuccessResult("Berhasil Logout"));
     }
 
     [HttpPost("login")]
