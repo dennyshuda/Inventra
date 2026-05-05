@@ -60,9 +60,9 @@ public class ProductService : IProductService
             var product = _mapper.Map<Models.Product>(createProductDto);
 
             var createdProduct = await _productRepository.CreateProductAsync(product);
-            var todoItemDto = _mapper.Map<ProductDto>(createdProduct);
+            var productDto = _mapper.Map<ProductDto>(createdProduct);
 
-            return ApiResponseDto<ProductDto>.SuccessResult(todoItemDto, "Product created successfully");
+            return ApiResponseDto<ProductDto>.SuccessResult(productDto, "Product created successfully");
         }
         catch (Exception ex)
         {
@@ -75,23 +75,23 @@ public class ProductService : IProductService
     {
         try
         {
-            var existingTodoItem = await _productRepository.GetProductByIdAsync(id);
+            var existingProduct = await _productRepository.GetProductByIdAsync(id);
 
-            if (existingTodoItem == null)
+            if (existingProduct == null)
             {
                 return ApiResponseDto<ProductDto>.ErrorResult("Product not found");
             }
 
-            _mapper.Map(updateProductDto, existingTodoItem);
+            _mapper.Map(updateProductDto, existingProduct);
 
-            var updatedProduct = await _productRepository.UpdateProductAsync(existingTodoItem);
+            var updatedProduct = await _productRepository.UpdateProductAsync(existingProduct);
             var productDto = _mapper.Map<ProductDto>(updatedProduct);
 
-            return ApiResponseDto<ProductDto>.SuccessResult(productDto, "Todo item updated successfully");
+            return ApiResponseDto<ProductDto>.SuccessResult(productDto, "Product updated successfully");
         }
         catch (Exception ex)
         {
-            return ApiResponseDto<ProductDto>.ErrorResult($"Error updating todo item: {ex.Message}");
+            return ApiResponseDto<ProductDto>.ErrorResult($"Error updating product: {ex.Message}");
         }
     }
 

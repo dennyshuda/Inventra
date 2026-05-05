@@ -3,6 +3,7 @@ using FluentValidation.Results;
 using Inventra.DTOs;
 using Inventra.DTOs.Auth;
 using Inventra.Services.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,6 +68,27 @@ public class UserController : ControllerBase
         }
 
         ApiResponseDto<AuthResponseDto> result = await _authService.LoginAsync(loginDto);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var id = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(id))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _authService.GetCurrentUserAsync(id);
 
         if (!result.Success)
         {

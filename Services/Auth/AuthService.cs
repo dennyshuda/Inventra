@@ -24,8 +24,6 @@ public class AuthService : IAuthService
         _mapper = mapper;
     }
 
-
-
     public async Task<ApiResponseDto<AuthResponseDto>> RegisterAsync(RegisterDto registerDto)
     {
         try
@@ -78,6 +76,26 @@ public class AuthService : IAuthService
         catch (Exception ex)
         {
             return ApiResponseDto<AuthResponseDto>.ErrorResult($"Login error: {ex.Message}");
+        }
+    }
+
+    public async Task<ApiResponseDto<UserDto>> GetCurrentUserAsync(string id)
+    {
+        try
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return ApiResponseDto<UserDto>.ErrorResult("User not found");
+            }
+
+            var userDto = _mapper.Map<UserDto>(user);
+
+            return ApiResponseDto<UserDto>.SuccessResult(userDto);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponseDto<UserDto>.ErrorResult($"Error retrieving user: {ex.Message}");
         }
     }
 
