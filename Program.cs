@@ -3,8 +3,10 @@ using FluentValidation;
 using Inventra.Data;
 using Inventra.DTOs.Auth;
 using Inventra.DTOs.Product;
+using Inventra.Repositories.Category;
 using Inventra.Repositories.Product;
 using Inventra.Services.Auth;
+using Inventra.Services.Category;
 using Inventra.Services.Product;
 using Inventra.Validators.Auth;
 using Inventra.Validators.Product;
@@ -27,8 +29,10 @@ builder.Services.AddScoped<IValidator<UpdateProductDto>, UpdateProductValidator>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

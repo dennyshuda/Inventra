@@ -1,11 +1,21 @@
 
+using Inventra.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Inventra.Repositories.Category;
 
 public class CategoryRepository : ICategoryRepository
 {
-    public Task<List<Models.Category>> GetCategoriesAsync()
+
+    private readonly AppDbContext _context;
+
+    public CategoryRepository(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
+    }
+    public async Task<List<Models.Category>> GetCategoriesAsync()
+    {
+        return await _context.Categories.ToListAsync();
     }
 
     public Task<Models.Category?> GetCategoryByIdAsync(int categoryId)

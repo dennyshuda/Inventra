@@ -11,5 +11,5 @@ public record ProductDto
     public decimal SellingPrice { get; set; }
     public int Stock { get; set; }
     public DateTime? CreatedAt { get; set; }
-    public CategoryDto Category { get; set; } = default!;
+    public CategoryDto? Category { get; set; }
 }
