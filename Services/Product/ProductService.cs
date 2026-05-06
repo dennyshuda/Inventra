@@ -3,6 +3,7 @@ using Inventra.DTOs;
 using Inventra.DTOs.Product;
 using Inventra.Repositories.Product;
 
+
 namespace Inventra.Services.Product;
 
 public class ProductService : IProductService
@@ -82,7 +83,23 @@ public class ProductService : IProductService
                 return ApiResponseDto<ProductDto>.ErrorResult("Product not found");
             }
 
-            _mapper.Map(updateProductDto, existingProduct);
+            if (updateProductDto.Name != null)
+                existingProduct.Name = updateProductDto.Name;
+
+            if (updateProductDto.Sku != null)
+                existingProduct.Sku = updateProductDto.Sku;
+
+            if (updateProductDto.PurchasePrice.HasValue)
+                existingProduct.PurchasePrice = updateProductDto.PurchasePrice.Value;
+
+            if (updateProductDto.SellingPrice.HasValue)
+                existingProduct.SellingPrice = updateProductDto.SellingPrice.Value;
+
+            if (updateProductDto.Stock.HasValue)
+                existingProduct.Stock = updateProductDto.Stock.Value;
+
+            if (updateProductDto.CategoryId.HasValue)
+                existingProduct.CategoryId = updateProductDto.CategoryId.Value;
 
             var updatedProduct = await _productRepository.UpdateProductAsync(existingProduct);
             var productDto = _mapper.Map<ProductDto>(updatedProduct);
@@ -91,7 +108,7 @@ public class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            return ApiResponseDto<ProductDto>.ErrorResult($"Error updating product: {ex.Message}");
+            return ApiResponseDto<ProductDto>.ErrorResult($"Error updating product: {ex}");
         }
     }
 
